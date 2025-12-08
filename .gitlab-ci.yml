@@ -23,7 +23,7 @@ build_ci_image:
     - echo "Logging into GitLab Container Registry..."
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE/cpp_config-ci:latest || true
-    - docker build --cache-from=$CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA -f Dockerfile .
+    - docker build --cache-from=$CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA -f Dockerfile.ci .
     - docker push $CI_REGISTRY_IMAGE/cpp_config-ci:latest
     - docker push $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA
   # rules:
@@ -34,14 +34,12 @@ clang_check:
   stage: lint
   image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
   script:
-    - make setup
     - make clang-check
 
 cpplint:
   stage: lint
   image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
   script:
-    - make setup
     - make cpplint
 
 cppcheck:
@@ -58,7 +56,6 @@ build_project:
     - cppcheck
   image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
   script:
-    - make setup
     - make build
   artifacts:
     paths:
@@ -72,7 +69,6 @@ test_unit:
   needs:
     - build_project
   script:
-    - make setup
     - make test
   artifacts:
     when: always
