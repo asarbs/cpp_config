@@ -26,9 +26,9 @@ build_ci_image:
     - docker build --cache-from=$CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA -f Dockerfile.ci .
     - docker push $CI_REGISTRY_IMAGE/cpp_config-ci:latest
     - docker push $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA
-  # rules:
-  #   - changes:
-  #       - Dockerfile
+  rules:
+    - changes:
+        - Dockerfile
 
 clang_check:
   stage: lint

@@ -108,13 +108,5 @@ namespace cpp_config {
             }
     };
 
-    class ConfigurationError : public std::runtime_error {
-        public:
-            explicit ConfigurationError(const std::string &what_arg) : std::runtime_error(what_arg) {
-            }
-            explicit ConfigurationError(const char *what_arg) : std::runtime_error(what_arg) {
-            }
-    };
-
 };  // namespace cpp_config
 #endif
