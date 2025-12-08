@@ -39,6 +39,6 @@ WORKDIR /app
 COPY . /app
 
 ENV SUDO=
-RUN make setup || true
+RUN apt-get update && make setup || true
 
 CMD ["/bin/bash"]
