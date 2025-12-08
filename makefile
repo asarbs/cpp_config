@@ -7,7 +7,7 @@
 # and distributed under the terms specified by the copyright holder.
 
 # ---------------------------------------
-# World VTT / WChat — Master Makefile
+# World VTT / cpp_config — Master Makefile
 # ---------------------------------------
 
 PWD ?= $(shell pwd)
@@ -109,12 +109,13 @@ cppcheck:
 		$(SRC_DIR)
 
 
-# ---------------------------------------
-# FULL CHECK + BUILD PIPELINE
-# ---------------------------------------
+sync-github:
+	git remote remove github 2>/dev/null || true
+	git remote add github git@github.com:asarbs/cpp_config.git
+	if [ -f .git/shallow ]; then git fetch --unshallow; fi
+	git push --force github master --tags
 
 all: clean clang-check cppcheck cpplint build test
 	@echo "[ALL OK]"
-
 
 .PHONY: build build-tests test clean clang-check clang-reformat cpplint cppcheck setup

@@ -1,0 +1,84 @@
+# Template C++ Application
+
+# This template allows you to validate your C++ application.
+# The workflow allows running tests and code linting on the default branch.
+
+stages:
+  - build_image
+  - lint
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""  # ważne dla docker:dind
+
+build_ci_image:
+  stage: build_image
+  image: docker:20.10
+  services:
+    - docker:dind
+  script:
+    - echo "Logging into GitLab Container Registry..."
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $CI_REGISTRY_IMAGE/cpp_config-ci:latest || true
+    - docker build --cache-from=$CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:latest -t $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA -f Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/cpp_config-ci:latest
+    - docker push $CI_REGISTRY_IMAGE/cpp_config-ci:$CI_COMMIT_SHORT_SHA
+  # rules:
+  #   - changes:
+  #       - Dockerfile
+
+clang_check:
+  stage: lint
+  image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
+  script:
+    - make setup
+    - make clang-check
+
+cpplint:
+  stage: lint
+  image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
+  script:
+    - make setup
+    - make cpplint
+
+cppcheck:
+  stage: lint
+  image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
+  script:
+    - make cppcheck
+
+build_project:
+  stage: build
+  needs:
+    - clang_check
+    - cpplint
+    - cppcheck
+  image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
+  script:
+    - make setup
+    - make build
+  artifacts:
+    paths:
+      - build/linux/bin/
+      - build/linux/lib/
+    expire_in: 2h
+
+test_unit:
+  stage: test
+  image: $CI_REGISTRY_IMAGE/cpp_config-ci:latest
+  needs:
+    - build_project
+  script:
+    - make setup
+    - make test
+  artifacts:
+    when: always
+    expire_in: 2h
+    paths:
+      - build/test-results.xml
+    reports:
+      junit:
+        - build/test-results.xml
