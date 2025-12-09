@@ -15,10 +15,11 @@ add_library(${TARGET_NAME} STATIC
     ConfigParameter.cpp
 )
 
-target_include_directories(${TARGET_NAME}
+target_include_directories(${TARGET_NAME} PUBLIC
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
+
 
 target_link_libraries(${TARGET_NAME}
     PUBLIC

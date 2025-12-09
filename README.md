@@ -234,11 +234,11 @@ MyConfig::instance().clear();
 
 ## 🎯 Why cpp_config?
 
--   zero dependencies\
--   strongly typed configuration\
--   safe conversions\
--   easy to extend\
--   works in embedded and large projects\
+-   zero dependencies
+-   strongly typed configuration
+-   safe conversions
+-   easy to extend
+-   works in embedded and large projects
 -   clean and minimalistic API
 
 ------------------------------------------------------------------------
